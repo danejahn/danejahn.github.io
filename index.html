@@ -79,7 +79,7 @@
         }
         .stat-item .label { font-size: 0.8em; opacity: 0.6; margin-top: 2px; }
 
-        .container { max-width: 1000px; margin: 0 auto; padding: 40px 24px; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
 
         .section-title {
             font-size: 1.5em;
@@ -128,12 +128,6 @@
             align-items: flex-end;
             padding: 24px;
             position: relative;
-        }
-        .card-banner.daxing {
-            background: linear-gradient(135deg, #1a2980 0%, #26a0da 100%);
-        }
-        .card-banner.oral {
-            background: linear-gradient(135deg, #134e5e 0%, #71b280 100%);
         }
         .card-banner .icon {
             font-size: 3em;
@@ -189,6 +183,12 @@
             color: #667eea;
             font-weight: 500;
         }
+
+        /* Banner color themes */
+        .banner-hospital { background: linear-gradient(135deg, #1a2980 0%, #26a0da 100%); }
+        .banner-oral { background: linear-gradient(135deg, #134e5e 0%, #71b280 100%); }
+        .banner-mingmou { background: linear-gradient(135deg, #0c3483 0%, #a2b6df 100%); }
+        .banner-sunshine { background: linear-gradient(135deg, #f97316 0%, #eab308 100%); }
 
         .roadmap {
             margin-top: 60px;
@@ -264,15 +264,15 @@
         <div class="tagline">📅 更新于 2026年5月</div>
         <div class="stats-bar">
             <div class="stat-item">
-                <div class="num">2</div>
+                <div class="num">4</div>
                 <div class="label">在管项目</div>
             </div>
             <div class="stat-item">
-                <div class="num">744</div>
+                <div class="num">800+</div>
                 <div class="label">陕西万中小学生</div>
             </div>
             <div class="stat-item">
-                <div class="num">3</div>
+                <div class="num">6</div>
                 <div class="label">合作机构</div>
             </div>
         </div>
@@ -288,8 +288,9 @@
 
     <div class="project-grid">
 
+        <!-- 项目1: 大兴医院 -->
         <a href="daxing-hospital.html" class="project-card">
-            <div class="card-banner daxing">
+            <div class="card-banner banner-hospital">
                 <div class="status-tag">🟢 合作落地</div>
                 <div class="icon">🏛</div>
             </div>
@@ -310,8 +311,9 @@
             </div>
         </a>
 
+        <!-- 项目2: 口腔建档 -->
         <a href="oral-archives.html" class="project-card">
-            <div class="card-banner oral">
+            <div class="card-banner banner-oral">
                 <div class="status-tag">🟡 立项设计中</div>
                 <div class="icon">🦷</div>
             </div>
@@ -325,6 +327,52 @@
                     <span>🐰 兔博士</span>
                     <span>📊 9项检查</span>
                     <span>📱 家委会活动</span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="link">查看完整项目信息 →</span>
+            </div>
+        </a>
+
+        <!-- 项目3: 明眸皓齿 -->
+        <a href="mingmou-haochi.html" class="project-card">
+            <div class="card-banner banner-mingmou">
+                <div class="status-tag">🟡 立项中</div>
+                <div class="icon">🏥</div>
+            </div>
+            <div class="card-body">
+                <h2>陕西省"明眸皓齿"数据系统</h2>
+                <div class="desc">
+                    为陕西省儿童青少年"明眸皓齿"行动承建全省数据系统。覆盖全省中小学生视力与口腔健康数据采集、存储、传输与展示。
+                </div>
+                <div class="card-meta">
+                    <span>🏥 省卫健委</span>
+                    <span>📊 数据系统</span>
+                    <span>🔒 政务网</span>
+                    <span>🏫 全省中小学</span>
+                </div>
+            </div>
+            <div class="card-footer">
+                <span class="link">查看完整项目信息 →</span>
+            </div>
+        </a>
+
+        <!-- 项目4: 阳光少年 -->
+        <a href="sunshine-youth.html" class="project-card">
+            <div class="card-banner banner-sunshine">
+                <div class="status-tag">🟡 MVP产品设计</div>
+                <div class="icon">☀️</div>
+            </div>
+            <div class="card-body">
+                <h2>阳光少年</h2>
+                <div class="desc">
+                    面向 6-12 岁儿童的数字健康元宇宙。无屏手环连接现实身体与数字世界，以运动、睡眠驱动"阳光城"虚拟成长。上线名：温暖一座城。
+                </div>
+                <div class="card-meta">
+                    <span>👶 6-12岁</span>
+                    <span>⌚ 无屏手环</span>
+                    <span>🌐 元宇宙</span>
+                    <span>🏡 温暖一座城</span>
                 </div>
             </div>
             <div class="card-footer">
