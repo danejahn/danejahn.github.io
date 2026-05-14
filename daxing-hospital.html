@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>互联网医院与原研药服务 · 全家健康</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "PingFang SC", "Segoe UI", sans-serif;
+            background: #f5f7fb;
+            color: #1a1a2e;
+            line-height: 1.6;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #1a2980 0%, #26a0da 100%);
+            color: white;
+            padding: 60px 24px 50px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::after {
+            content: '🏛';
+            position: absolute;
+            right: 40px;
+            bottom: 20px;
+            font-size: 8em;
+            opacity: 0.08;
+        }
+        .hero-content { max-width: 1000px; margin: 0 auto; position: relative; z-index: 1; }
+        .hero .back {
+            display: inline-block;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+        }
+        .hero .back:hover { color: white; }
+        .hero h1 {
+            font-size: 2.4em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .hero .subtitle {
+            font-size: 1.1em;
+            opacity: 0.8;
+            max-width: 600px;
+        }
+        .hero .tags {
+            margin-top: 16px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .hero .tags span {
+            padding: 4px 14px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 40px 24px; }
+
+        .section {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.04);
+            border: 1px solid rgba(0,0,0,0.04);
+        }
+        .section h2 {
+            font-size: 1.3em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #f0f2f8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section h3 {
+            font-size: 1.05em;
+            font-weight: 600;
+            margin: 20px 0 12px;
+            color: #333;
+        }
+
+        /* 定位卡片 */
+        .positioning {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .pos-card {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .pos-card.high-end { background: linear-gradient(135deg, #fef3f2, #ffe4e6); }
+        .pos-card.hospital { background: linear-gradient(135deg, #eef2ff, #e0e7ff); }
+        .pos-card.health { background: linear-gradient(135deg, #f0fdf4, #dcfce7); }
+        .pos-card .emoji { font-size: 2em; margin-bottom: 8px; }
+        .pos-card .title { font-weight: 600; margin-bottom: 6px; }
+        .pos-card .desc { font-size: 0.85em; color: #666; line-height: 1.5; }
+
+        /* 亮点网格 */
+        .highlights {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+        }
+        .highlight-item {
+            padding: 16px;
+            border-radius: 10px;
+            background: #f8f9fc;
+            text-align: center;
+            font-size: 0.88em;
+        }
+        .highlight-item .emoji { font-size: 1.5em; margin-bottom: 6px; }
+        .highlight-item .label { font-weight: 500; color: #333; }
+        .highlight-item .detail { font-size: 0.85em; color: #888; margin-top: 3px; }
+
+        /* 合作表格 */
+        .coop-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+        .coop-table th {
+            text-align: left;
+            padding: 12px 14px;
+            background: #f8f9fc;
+            font-weight: 600;
+            color: #555;
+            font-size: 0.85em;
+        }
+        .coop-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #f0f2f8;
+        }
+        .coop-table tr:last-child td { border-bottom: none; }
+
+        /* 客群 */
+        .audience-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .audience-item {
+            padding: 16px;
+            border-radius: 10px;
+            background: #f8f9fc;
+        }
+        .audience-item .name { font-weight: 600; font-size: 0.95em; }
+        .audience-item .channel { font-size: 0.82em; color: #888; margin: 3px 0; }
+        .audience-item .value { font-size: 0.85em; color: #667eea; }
+
+        /* 流程图 */
+        .flow-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            padding: 20px 0;
+        }
+        .flow-step {
+            padding: 12px 20px;
+            border-radius: 10px;
+            background: #eef2ff;
+            font-size: 0.88em;
+            font-weight: 500;
+            text-align: center;
+            min-width: 80px;
+        }
+        .flow-arrow { font-size: 1.2em; color: #667eea; }
+
+        /* 时间线 */
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .tl-block {
+            padding: 16px;
+            border-radius: 10px;
+            background: #f8f9fc;
+            border-left: 3px solid #667eea;
+        }
+        .tl-block .period { font-weight: 600; color: #667eea; font-size: 0.88em; }
+        .tl-block .task { font-size: 0.9em; color: #333; margin-top: 4px; }
+
+        /* 风险 */
+        .risk-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .risk-item {
+            padding: 16px;
+            border-radius: 10px;
+            background: #fef8f8;
+            border-left: 3px solid #f87171;
+        }
+        .risk-item .title { font-weight: 600; font-size: 0.92em; }
+        .risk-item .solution { font-size: 0.85em; color: #2d8a6e; margin-top: 4px; }
+
+        @media (max-width: 700px) {
+            .positioning, .highlights, .audience-grid, .timeline-grid, .risk-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.6em; }
+            .flow-row { flex-direction: column; }
+            .flow-arrow { transform: rotate(90deg); }
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 24px;
+        }
+        .back-link:hover { opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <div class="hero-content">
+        <a href="index.html" class="back">← 返回产品库</a>
+        <h1>🏛 互联网医院与原研药服务</h1>
+        <div class="subtitle">全家健康 × 大兴医院 — 高端医疗服务的"SKP模式"</div>
+        <div class="tags">
+            <span>🟢 合作落地阶段</span>
+            <span>🏛 大兴医院</span>
+            <span>💊 原研药</span>
+            <span>🏦 银行高客</span>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- 项目定位 -->
+    <div class="section">
+        <h2>🎯 项目定位</h2>
+        <div class="positioning">
+            <div class="pos-card high-end">
+                <div class="emoji">💎</div>
+                <div class="title">高端客群</div>
+                <div class="desc">老板、银行私行客户、厅级领导，支付能力强，追求品质</div>
+            </div>
+            <div class="pos-card hospital">
+                <div class="emoji">🏛</div>
+                <div class="title">大兴医院合作</div>
+                <div class="desc">办公室入驻 + 互联网医院接入 + 商保服务中心共建</div>
+            </div>
+            <div class="pos-card health">
+                <div class="emoji">🔄</div>
+                <div class="title">产品闭环</div>
+                <div class="desc">原研药 + 商业保险 + 绿通服务，三合一高端医疗</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 核心亮点 -->
+    <div class="section">
+        <h2>⭐ 核心亮点</h2>
+        <div class="highlights">
+            <div class="highlight-item">
+                <div class="emoji">🏛</div>
+                <div class="label">大兴医院入驻</div>
+                <div class="detail">办公室驻场，运营原研药销售</div>
+            </div>
+            <div class="highlight-item">
+                <div class="emoji">🔗</div>
+                <div class="label">互联网医院接入</div>
+                <div class="detail">APP跳转方式，快捷合规</div>
+            </div>
+            <div class="highlight-item">
+                <div class="emoji">🛡</div>
+                <div class="label">商业保险创新</div>
+                <div class="detail">"买保险、吃原研药"独有产品</div>
+            </div>
+            <div class="highlight-item">
+                <div class="emoji">👥</div>
+                <div class="label">高端客群</div>
+                <div class="detail">老板、银行私行、厅级领导</div>
+            </div>
+            <div class="highlight-item">
+                <div class="emoji">🟢</div>
+                <div class="label">银行高客绿通</div>
+                <div class="detail">挂号、检查优先等绿通权益</div>
+            </div>
+            <div class="highlight-item">
+                <div class="emoji">🔬</div>
+                <div class="label">科学馆引流</div>
+                <div class="detail">面向770万中小学生科普引流</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 商业模式 -->
+    <div class="section">
+        <h2>🤝 核心合作模式</h2>
+        <div class="flow-row">
+            <div class="flow-step">银行合作方APP</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">全家健康APP</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step" style="background: #dbeafe; font-weight: 600;">大兴医院互联网医院</div>
+            <div class="flow-arrow">→</div>
+            <div class="flow-step">挂号 · 问诊 · 处方 · 购药</div>
+        </div>
+
+        <h3>合作内容一览</h3>
+        <table class="coop-table">
+            <tr><th>合作内容</th><th>形式</th><th>收益模式</th></tr>
+            <tr><td>办公室入驻</td><td>大兴医院内租房运营</td><td>接触药厂、建立关系</td></tr>
+            <tr><td>互联网医院接入</td><td>APP跳转到大兴医院小程序</td><td>流量管理、分润</td></tr>
+            <tr><td>银行高客引流</td><td>招行私行客户入口接入</td><td>高端转化、绿通服务</td></tr>
+            <tr><td>原研药销售</td><td>入口跳转，医院完成处方与购药</td><td>服务分润</td></tr>
+            <tr><td>商业保险销售</td><td>"买保险、吃原研药"</td><td>保险分成</td></tr>
+        </table>
+    </div>
+
+    <!-- 目标客群 -->
+    <div class="section">
+        <h2>👥 目标客群</h2>
+        <div class="audience-grid">
+            <div class="audience-item">
+                <div class="name">👨‍💼 老板 + 秦商总会</div>
+                <div class="channel">触达：杨哥直接关系</div>
+                <div class="value">高支付能力，愿意吃原研药</div>
+            </div>
+            <div class="audience-item">
+                <div class="name">🏦 银行私行客户</div>
+                <div class="channel">触达：招行、兴业银行等</div>
+                <div class="value">商保覆盖，绿通权益</div>
+            </div>
+            <div class="audience-item">
+                <div class="name">🏛 厅级领导</div>
+                <div class="channel">触达：老领导人介绍</div>
+                <div class="value">医保好，愿意吃好药</div>
+            </div>
+            <div class="audience-item">
+                <div class="name">👶 家委会青少年客群</div>
+                <div class="channel">触达：秦英裂变</div>
+                <div class="value">长期粘性，续约率高</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 时间线 -->
+    <div class="section">
+        <h2>📅 项目时间线</h2>
+        <div class="timeline-grid">
+            <div class="tl-block">
+                <div class="period">5月6-10日</div>
+                <div class="task">项目启动沟通，明确互联网医院与原研药合作方向</div>
+            </div>
+            <div class="tl-block">
+                <div class="period">5月11-17日</div>
+                <div class="task">技术对接互联网医院跳转，确认驻场办公室，梳理VIP参观路线</div>
+            </div>
+            <div class="tl-block">
+                <div class="period">5月18-31日</div>
+                <div class="task">原研药SKU整理、商业保险设计、用户授权协议补充</div>
+            </div>
+            <div class="tl-block">
+                <div class="period">6月</div>
+                <div class="task">运营方案执行，开始拉客群，银行参观接待</div>
+            </div>
+            <div class="tl-block" style="grid-column: 1 / -1;">
+                <div class="period">7月</div>
+                <div class="task">原研药基地基础能力上线，视海南乐城合作进展推进国外未获批原研药路径</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 风险与应对 -->
+    <div class="section">
+        <h2>⚠️ 风险与应对</h2>
+        <div class="risk-grid">
+            <div class="risk-item">
+                <div class="title">合规风险 — 卖药需处方</div>
+                <div class="solution">✅ 互联网医院处方流程严格按卫健委规定执行</div>
+            </div>
+            <div class="risk-item">
+                <div class="title">数据合规 — 医疗数据不外传</div>
+                <div class="solution">✅ 患者自行上传 + OCR识别，协议补充授权条款</div>
+            </div>
+            <div class="risk-item">
+                <div class="title">宣传资质 — 不可直接宣传处方药</div>
+                <div class="solution">✅ 第三方只做服务入口，不承接处方药销售闭环</div>
+            </div>
+            <div class="risk-item">
+                <div class="title">依赖风险 — 第一阶段依赖大兴医院</div>
+                <div class="solution">✅ 第二阶段申请独立线上卖药资质</div>
+            </div>
+        </div>
+    </div>
+
+    <a href="index.html" class="back-link">← 返回全家健康产品库</a>
+
+</div>
+
+</body>
+</html>
