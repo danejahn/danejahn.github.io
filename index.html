@@ -190,51 +190,6 @@
         .banner-mingmou { background: linear-gradient(135deg, #0c3483 0%, #a2b6df 100%); }
         .banner-sunshine { background: linear-gradient(135deg, #f97316 0%, #eab308 100%); }
 
-        .roadmap {
-            margin-top: 60px;
-        }
-        .roadmap h2 {
-            font-size: 1.5em;
-            font-weight: 600;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-        .timeline {
-            display: flex;
-            justify-content: center;
-            gap: 0;
-            position: relative;
-        }
-        .timeline::before {
-            content: '';
-            position: absolute;
-            top: 24px;
-            left: 10%;
-            right: 10%;
-            height: 2px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-        }
-        .tl-item {
-            flex: 1;
-            text-align: center;
-            position: relative;
-            padding-top: 50px;
-        }
-        .tl-item .dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            background: #667eea;
-            position: absolute;
-            top: 18px;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 3px solid #f5f7fb;
-            box-shadow: 0 0 0 2px #667eea;
-        }
-        .tl-item .month { font-weight: 600; font-size: 0.95em; color: #333; }
-        .tl-item .event { font-size: 0.8em; color: #888; margin-top: 4px; }
-
         footer {
             text-align: center;
             padding: 40px 24px;
@@ -248,10 +203,6 @@
             .project-grid { grid-template-columns: 1fr; }
             .header h1 { font-size: 2em; }
             .stats-bar { gap: 20px; }
-            .timeline { flex-direction: column; gap: 20px; }
-            .timeline::before { display: none; }
-            .tl-item { padding-top: 0; padding-left: 30px; text-align: left; }
-            .tl-item .dot { top: 4px; left: 0; transform: none; }
         }
     </style>
 </head>
@@ -381,34 +332,6 @@
         </a>
 
     </div>
-
-    <div class="roadmap">
-        <h2>📈 项目时间线</h2>
-        <div class="timeline">
-            <div class="tl-item">
-                <div class="dot"></div>
-                <div class="month">5月</div>
-                <div class="event">项目启动<br>调研与方案确认</div>
-            </div>
-            <div class="tl-item">
-                <div class="dot"></div>
-                <div class="month">6月</div>
-                <div class="event">技术对接<br>运营方案执行</div>
-            </div>
-            <div class="tl-item">
-                <div class="dot"></div>
-                <div class="month">7月</div>
-                <div class="event">原研药基础能力上线<br>口腔活动试点</div>
-            </div>
-            <div class="tl-item">
-                <div class="dot"></div>
-                <div class="month">Q3</div>
-                <div class="event">模式验证<br>可复制输出</div>
-            </div>
-        </div>
-    </div>
-
-</div>
 
 <footer>
     全家健康产品库 · Powered by Hermes & GitHub Pages
