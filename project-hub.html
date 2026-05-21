@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>项目中枢仪表盘</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --card: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-secondary: #8b949e;
+    --p0: #f85149;
+    --p1: #d29922;
+    --p2: #58a6ff;
+    --p3: #8b949e;
+    --active: #3fb950;
+    --paused: #8b949e;
+    --done: #7ee787;
+    --pending: #d29922;
+    --blocker: #f85149;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding: 32px 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  h1 { font-size: 28px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { color: var(--text-secondary); font-size: 14px; margin-bottom: 28px; }
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-card .num {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  .stat-card .label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+  }
+  .stat-card.active .num { color: var(--active); }
+  .stat-card.paused .num { color: var(--paused); }
+  .stat-card.done .num { color: var(--done); }
+  .stat-card.pending .num { color: var(--pending); }
+  .stat-card.blocked .num { color: var(--blocker); }
+
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .section-header {
+    padding: 14px 18px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-header:hover { background: rgba(255,255,255,0.03); }
+  .section-header .count {
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-secondary);
+    margin-left: auto;
+  }
+  .section-header .arrow {
+    transition: transform .2s;
+    font-size: 12px;
+  }
+  .section-header.collapsed .arrow { transform: rotate(-90deg); }
+  .section-body { overflow-x: auto; }
+  .section-body.hidden { display: none; }
+  .section-body.padded { padding: 16px 18px; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  th {
+    text-align: left;
+    padding: 10px 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    font-size: 12px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(48,54,61,0.5);
+    vertical-align: middle;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover { background: rgba(255,255,255,0.02); }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-p0 { background: rgba(248,81,73,0.15); color: var(--p0); }
+  .badge-p1 { background: rgba(210,153,34,0.15); color: var(--p1); }
+  .badge-p2 { background: rgba(88,166,255,0.12); color: var(--p2); }
+  .badge-p3 { background: rgba(139,148,158,0.2); color: var(--p3); }
+  .badge-active { background: rgba(63,185,80,0.15); color: var(--active); }
+  .badge-paused { background: rgba(139,148,158,0.2); color: var(--paused); }
+  .badge-done { background: rgba(126,231,135,0.12); color: var(--done); }
+  .badge-pending { background: rgba(210,153,34,0.15); color: var(--pending); }
+
+  .vault-tag {
+    display: inline-block;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 500;
+  }
+  .vault-danejahn { background: rgba(88,166,255,0.12); color: #58a6ff; }
+  .vault-familyhealth { background: rgba(63,185,80,0.12); color: #3fb950; }
+  .vault-sunshine { background: rgba(210,153,34,0.12); color: #d29922; }
+  .vault-reliable { background: rgba(163,113,247,0.12); color: #a371f7; }
+
+  .blocker-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+  }
+  .blocker-item + .blocker-item { border-top: 1px solid rgba(48,54,61,0.5); }
+  .blocker-icon { color: var(--blocker); flex-shrink: 0; }
+  .blocker-project { font-weight: 500; }
+  .blocker-detail { color: var(--text-secondary); font-size: 12px; }
+
+  .next-item {
+    padding: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .next-item + .next-item { border-top: 1px solid rgba(48,54,61,0.5); }
+  .next-num {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(88,166,255,0.15);
+    color: #58a6ff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .stage-bar {
+    display: flex; gap: 4px; align-items: center;
+  }
+  .stage-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+  }
+  .stage-dot.filled { background: var(--active); }
+  .stage-dot.current { box-shadow: 0 0 0 2px rgba(63,185,80,0.3); }
+
+  @media (max-width: 768px) {
+    body { padding: 16px 12px; }
+    .stats-row { grid-template-columns: repeat(3, 1fr); }
+    th, td { padding: 8px 10px; font-size: 12px; }
+  }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+  .legend-item { display: flex; align-items: center; gap: 4px; }
+</style>
+</head>
+<body>
+
+<h1>📊 项目中枢仪表盘</h1>
+<div class="subtitle">聚合 Danejahn · 全家健康 · 阳光少年 · 睿莱 四个知识库 · 共 56 个项目 · 2026-05-22 更新</div>
+
+<!-- Stats -->
+<div class="stats-row">
+  <div class="stat-card active">
+    <div class="num" id="count-active">0</div>
+    <div class="label">🔄 推进中</div>
+  </div>
+  <div class="stat-card pending">
+    <div class="num" id="count-pending">0</div>
+    <div class="label">⏳ 待启动</div>
+  </div>
+  <div class="stat-card paused">
+    <div class="num" id="count-paused">0</div>
+    <div class="label">⏸️ 已暂停</div>
+  </div>
+  <div class="stat-card done">
+    <div class="num" id="count-done">0</div>
+    <div class="label">✅ 已完成</div>
+  </div>
+  <div class="stat-card blocked">
+    <div class="num" id="count-blocked">0</div>
+    <div class="label">🚧 有阻塞</div>
+  </div>
+</div>
+
+<div class="legend">
+  <span class="legend-item"><span class="badge badge-p0">P0</span> 最高优先</span>
+  <span class="legend-item"><span class="badge badge-p1">P1</span> 高优先</span>
+  <span class="legend-item"><span class="badge badge-p2">P2</span> 中优先</span>
+  <span class="legend-item"><span class="badge badge-p3">P3</span> 低优先</span>
+  <span class="legend-item"><span class="vault-tag vault-danejahn">D</span> Danejahn</span>
+  <span class="legend-item"><span class="vault-tag vault-familyhealth">F</span> FamilyHealth</span>
+  <span class="legend-item"><span class="vault-tag vault-sunshine">S</span> Sunshine</span>
+  <span class="legend-item"><span class="vault-tag vault-reliable">R</span> Reliable</span>
+</div>
+
+<!-- Active Projects -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span>🔴 推进中项目</span>
+    <span class="count" id="active-label">0 个</span>
+    <span class="arrow">▼</span>
+  </div>
+  <div class="section-body">
+    <table>
+      <thead>
+        <tr>
+          <th>优先级</th>
+          <th>项目</th>
+          <th>Vault</th>
+          <th>阶段</th>
+          <th>下一步</th>
+          <th>阻塞</th>
+        </tr>
+      </thead>
+      <tbody id="active-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Pending Projects -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span>🟡 待启动项目</span>
+    <span class="count" id="pending-label">0 个</span>
+    <span class="arrow">▼</span>
+  </div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>项目</th><th>Vault</th><th>优先级</th><th>说明</th></tr></thead>
+      <tbody id="pending-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Blockers -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span>🚧 阻塞清单</span>
+    <span class="count" id="blocker-label">0 个</span>
+    <span class="arrow">▼</span>
+  </div>
+  <div class="section-body padded" id="blocker-list"></div>
+</div>
+
+<!-- Next Actions -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span>📋 下一步行动</span>
+    <span class="count" id="next-label"></span>
+    <span class="arrow">▼</span>
+  </div>
+  <div class="section-body padded" id="next-list"></div>
+</div>
+
+<!-- Paused Projects -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span>⏸️ 已暂停 / 已归档</span>
+    <span class="count" id="paused-label">0 个</span>
+    <span class="arrow">▼</span>
+  </div>
+  <div class="section-body hidden">
+    <table>
+      <thead><tr><th>项目</th><th>Vault</th><th>状态</th></tr></thead>
+      <tbody id="paused-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Done Projects -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span>✅ 已完成项目</span>
+    <span class="count" id="done-label">0 个</span>
+    <span class="arrow">▼</span>
+  </div>
+  <div class="section-body hidden">
+    <table>
+      <thead><tr><th>项目</th><th>Vault</th><th>说明</th></tr></thead>
+      <tbody id="done-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- By Vault -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span>🗂️ 按 Vault 索引</span>
+    <span class="count">4 个知识库</span>
+    <span class="arrow">▼</span>
+  </div>
+  <div class="section-body hidden" id="vault-index">
+    <div style="padding:16px 18px;font-size:13px;color:var(--text-secondary);">
+      完整索引（加载中...）
+    </div>
+  </div>
+</div>
+
+<script>
+const data = [
+  {name:"明眸皓齿数据系统",vault:"FamilyHealth",stage:"立项中",priority:"P0",status:"推进中",next:"对接陕西省卫健委数据方案",blocker:""},
+  {name:"大兴医院互联网医院接入",vault:"FamilyHealth",stage:"开发中",priority:"P0",status:"推进中",next:"推进第一阶段跳转对接开发",blocker:"需确认小程序跳转技术方案"},
+  {name:"高客家庭保健组",vault:"FamilyHealth",stage:"项目书",priority:"P0",status:"推进中",next:"等老板确认后推进",blocker:""},
+  {name:"阳光少年MVP",vault:"Sunshine",stage:"开发中",priority:"P0",status:"推进中",next:"继续MVP开发",blocker:""},
+  {name:"2026年度OKR",vault:"Danejahn",stage:"执行中",priority:"P0",status:"推进中",next:"Q2目标追踪",blocker:""},
+  {name:"FixBug",vault:"Reliable",stage:"开发中",priority:"P1",status:"推进中",next:"修复Bug",blocker:""},
+  {name:"星未来FixBug",vault:"Reliable",stage:"开发中",priority:"P1",status:"推进中",next:"继续修复",blocker:""},
+  {name:"Agent-Workspace",vault:"Danejahn",stage:"需求确认",priority:"P1",status:"待启动",next:"确认需求文档",blocker:"多会话并行能力待验证"},
+  {name:"AI复利系统",vault:"Danejahn",stage:"推进中",priority:"P1",status:"推进中",next:"首月验证中",blocker:""},
+  {name:"Hermes反思与做梦机制",vault:"Danejahn",stage:"推进中",priority:"P1",status:"推进中",next:"每日夜间MVP已运行",blocker:""},
+  {name:"LifeOS反馈与进化系统",vault:"Danejahn",stage:"推进中",priority:"P1",status:"推进中",next:"每日自我进化报告已运行",blocker:""},
+  {name:"海外AI信息差短视频实验",vault:"Danejahn",stage:"推进中",priority:"P1",status:"推进中",next:"发布验证",blocker:""},
+  {name:"星未来报告改版",vault:"Reliable",stage:"开发中",priority:"P1",status:"推进中",next:"继续改版",blocker:""},
+  {name:"Apple开发者账号申请",vault:"Sunshine",stage:"推进中",priority:"P1",status:"推进中",next:"跟进组织详情页进度",blocker:""},
+  {name:"阳光少年世界观项目",vault:"Sunshine",stage:"项目书",priority:"P1",status:"推进中",next:"指导MVP原型设计",blocker:""},
+  {name:"ClaudeCode工作流",vault:"Danejahn",stage:"推进中",priority:"P2",status:"推进中",next:""},
+  {name:"产研全栈工作流",vault:"FamilyHealth",stage:"推进中",priority:"P2",status:"推进中",next:"沉淀SOP"},
+  {name:"公司AI课",vault:"FamilyHealth",stage:"推进中",priority:"P2",status:"推进中",next:"第2课待启动"},
+  {name:"互联网医院原研药",vault:"FamilyHealth",stage:"推进中",priority:"P2",status:"推进中",next:"与大兴医院合作"},
+  {name:"产业趋势投资认知训练体系",vault:"Danejahn",stage:"推进中",priority:"P2",status:"推进中",next:"每日1.5h训练"},
+  {name:"AI原生工作系统",vault:"Danejahn",stage:"待启动",priority:"P2",status:"待启动",next:"元项目在建中"},
+  {name:"儿童口腔建档",vault:"FamilyHealth",stage:"待启动",priority:"P1",status:"待启动",next:"待推进"},
+  {name:"儿童注意力训练对接",vault:"FamilyHealth",stage:"待启动",priority:"P2",status:"待启动",next:"Phase 0进行中"},
+  {name:"脊柱侧弯测试对接",vault:"FamilyHealth",stage:"待启动",priority:"P2",status:"待启动",next:"Phase 1启动"},
+  {name:"心理健康项目",vault:"FamilyHealth",stage:"待启动",priority:"P2",status:"待启动",next:"应急启动期"},
+  {name:"AI普惠计划",vault:"Sunshine",stage:"待启动",priority:"P2",status:"待启动"},
+  {name:"体育外卖平台",vault:"Sunshine",stage:"待启动",priority:"P2",status:"待启动"},
+  {name:"西安理工体测",vault:"Reliable",stage:"待启动",priority:"P3",status:"待启动"},
+  {name:"GStack学习项目",vault:"Danejahn",stage:"想法讨论",priority:"P3",status:"待启动"},
+  {name:"Hermes量化交易",vault:"Danejahn",stage:"已暂停",priority:"P3",status:"已暂停",next:"Q2降级探索项"},
+  {name:"投资探索",vault:"Danejahn",stage:"已暂停",priority:"P3",status:"已暂停",next:"Q2降级探索项"},
+  {name:"家庭健康服务",vault:"FamilyHealth",stage:"已归档",priority:"P2",status:"已归档"},
+  {name:"西电体测",vault:"FamilyHealth",stage:"已暂停",priority:"P3",status:"已暂停"},
+  {name:"儿保合作项目",vault:"FamilyHealth",stage:"已暂停",priority:"P2",status:"已暂停"},
+  {name:"体育外卖Demo",vault:"FamilyHealth",stage:"已暂停",priority:"P2",status:"已暂停"},
+  {name:"HealthCity",vault:"FamilyHealth",stage:"已归档",priority:"P3",status:"已归档"},
+  {name:"陕西足球联赛",vault:"FamilyHealth",stage:"已暂停",priority:"P3",status:"已暂停"},
+  {name:"自建电商平台",vault:"FamilyHealth",stage:"已暂停",priority:"P3",status:"已暂停"},
+  {name:"超级义诊项目",vault:"FamilyHealth",stage:"已暂停",priority:"P3",status:"已暂停"},
+  {name:"营养包幼儿园渠道销售",vault:"FamilyHealth",stage:"已暂停",priority:"P2",status:"已暂停"},
+  {name:"陕西联合球票申请系统",vault:"FamilyHealth",stage:"已暂停",priority:"P2",status:"已暂停"},
+  {name:"阳光少年与乔布斯",vault:"Sunshine",stage:"已暂停",priority:"P1",status:"已暂停"},
+  {name:"陕师大定制",vault:"Reliable",stage:"已暂停",priority:"P2",status:"已暂停"},
+  {name:"教务系统外包",vault:"Reliable",stage:"已暂停",priority:"P2",status:"已暂停"},
+  {name:"理想信念教育",vault:"FamilyHealth",stage:"已完成",priority:"P3",status:"已完成"},
+  {name:"APP发布流程交接",vault:"FamilyHealth",stage:"已完成",priority:"P3",status:"已完成"},
+  {name:"公司AI工作流建设",vault:"FamilyHealth",stage:"已完成",priority:"P2",status:"已完成"},
+  {name:"资本化入账材料",vault:"FamilyHealth",stage:"已完成",priority:"P3",status:"已完成"},
+  {name:"陕西联合门票收集",vault:"FamilyHealth",stage:"已完成",priority:"P2",status:"已完成"},
+  {name:"球员数据体系",vault:"FamilyHealth",stage:"已完成",priority:"P3",status:"已完成"},
+  {name:"产品架构与命名确认",vault:"Sunshine",stage:"已完成",priority:"P0",status:"已完成"},
+  {name:"营养师工具箱",vault:"Reliable",stage:"已完成",priority:"P1",status:"已完成"},
+  {name:"AI全栈工作流",vault:"Reliable",stage:"已完成",priority:"P2",status:"已完成"},
+  {name:"膳食宝塔",vault:"Reliable",stage:"已完成",priority:"P1",status:"已完成"},
+  {name:"方舟优化",vault:"Reliable",stage:"已完成",priority:"P2",status:"已完成"},
+  {name:"数据要素大赛",vault:"Reliable",stage:"已完成",priority:"P1",status:"已完成"}
+];
+
+const statusOrder = {"推进中":0,"待启动":1,"已暂停":2,"已归档":3,"已完成":4};
+const priorityOrder = {"P0":0,"P1":1,"P2":2,"P3":3};
+
+// Sort
+data.sort((a,b) => {
+  const sa = statusOrder[a.status] ?? 99, sb = statusOrder[b.status] ?? 99;
+  if (sa !== sb) return sa - sb;
+  const pa = priorityOrder[a.priority] ?? 99, pb = priorityOrder[b.priority] ?? 99;
+  if (pa !== pb) return pa - pb;
+  return a.name.localeCompare(b.name);
+});
+
+function vaultTag(v) {
+  const cls = {'Danejahn':'danejahn','FamilyHealth':'familyhealth','Sunshine':'sunshine','Reliable':'reliable'}[v]||'danejahn';
+  return `<span class="vault-tag vault-${cls}">${v[0]}</span>`;
+}
+function badge(cls, text) {
+  return `<span class="badge ${cls}">${text}</span>`;
+}
+
+function render() {
+  const active = data.filter(d => d.status === "推进中");
+  const pending = data.filter(d => d.status === "待启动" || d.stage === "想法讨论");
+  const paused = data.filter(d => d.status === "已暂停" || d.status === "已归档");
+  const done = data.filter(d => d.status === "已完成");
+  const blocked = data.filter(d => d.blocker);
+
+  document.getElementById('count-active').textContent = active.length;
+  document.getElementById('count-pending').textContent = pending.length;
+  document.getElementById('count-paused').textContent = paused.length;
+  document.getElementById('count-done').textContent = done.length;
+  document.getElementById('count-blocked').textContent = blocked.length;
+  document.getElementById('active-label').textContent = active.length + ' 个';
+  document.getElementById('pending-label').textContent = pending.length + ' 个';
+  document.getElementById('paused-label').textContent = paused.length + ' 个';
+  document.getElementById('done-label').textContent = done.length + ' 个';
+  document.getElementById('blocker-label').textContent = blocked.length + ' 个';
+
+  // Active table
+  const at = document.getElementById('active-table');
+  at.innerHTML = active.map(d => `<tr>
+    <td>${badge('badge-'+d.priority.toLowerCase(), d.priority)}</td>
+    <td><strong>${d.name}</strong></td>
+    <td>${vaultTag(d.vault)}</td>
+    <td>${d.stage}</td>
+    <td style="color:var(--text-secondary);font-size:12px">${d.next||'—'}</td>
+    <td>${d.blocker ? `<span style="color:var(--blocker);font-size:12px">⚠ ${d.blocker}</span>` : '—'}</td>
+  </tr>`).join('');
+
+  // Pending table
+  document.getElementById('pending-table').innerHTML = pending.map(d => `<tr>
+    <td><strong>${d.name}</strong></td>
+    <td>${vaultTag(d.vault)}</td>
+    <td>${badge('badge-'+d.priority.toLowerCase(), d.priority)}</td>
+    <td style="color:var(--text-secondary);font-size:12px">${d.next||'—'}</td>
+  </tr>`).join('');
+
+  // Paused table
+  document.getElementById('paused-table').innerHTML = paused.map(d => `<tr>
+    <td><strong>${d.name}</strong></td>
+    <td>${vaultTag(d.vault)}</td>
+    <td>${badge('badge-paused', d.status)}</td>
+  </tr>`).join('');
+
+  // Done table
+  document.getElementById('done-table').innerHTML = done.map(d => `<tr>
+    <td><strong>${d.name}</strong></td>
+    <td>${vaultTag(d.vault)}</td>
+    <td style="color:var(--text-secondary);font-size:12px">${d.next||'已完成'}</td>
+  </tr>`).join('');
+
+  // Blockers
+  document.getElementById('blocker-list').innerHTML = blocked.map(d => `
+    <div class="blocker-item">
+      <span class="blocker-icon">⚠️</span>
+      <span class="blocker-project">${d.name}</span>
+      <span class="blocker-detail">${d.blocker}</span>
+    </div>
+  `).join('');
+
+  // Next actions
+  const nextItems = active.filter(d => d.next && d.next !== '—').slice(0, 8);
+  document.getElementById('next-list').innerHTML = nextItems.map((d,i) => `
+    <div class="next-item">
+      <span class="next-num">${i+1}</span>
+      <span><strong>${badge('badge-'+d.priority.toLowerCase(), d.priority)} ${d.name}</strong></span>
+      <span style="color:var(--text-secondary);font-size:13px">→ ${d.next}</span>
+    </div>
+  `).join('');
+  document.getElementById('next-label').textContent = nextItems.length + ' 项';
+}
+
+function toggleSection(header) {
+  header.classList.toggle('collapsed');
+  const body = header.nextElementSibling;
+  body.classList.toggle('hidden');
+}
+
+render();
+</script>
+</body>
+</html>
