@@ -157,6 +157,27 @@
   .blocker-project { font-weight: 500; }
   .blocker-detail { color: var(--text-secondary); font-size: 12px; }
 
+
+  .row-detail {
+    display: none;
+    background: rgba(255,255,255,0.02);
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(48,54,61,0.3);
+  }
+  .row-detail.show { display: table-row; }
+  .row-detail-grid {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 6px 16px;
+    max-width: 600px;
+  }
+  .row-detail-grid .label { color: var(--text-secondary); font-size: 12px; }
+  .row-detail-grid .value { color: var(--text); }
+  .clickable-row { cursor: pointer; }
+  .clickable-row:hover { background: rgba(255,255,255,0.05) !important; }
+
   .next-item {
     padding: 8px 0;
     display: flex;
@@ -421,14 +442,31 @@ function render() {
 
   // Active table
   const at = document.getElementById('active-table');
-  at.innerHTML = active.map(d => `<tr>
-    <td>${badge('badge-'+d.priority.toLowerCase(), d.priority)}</td>
-    <td><strong>${d.name}</strong></td>
-    <td>${vaultTag(d.vault)}</td>
-    <td>${d.stage}</td>
-    <td style="color:var(--text-secondary);font-size:12px">${d.next||'—'}</td>
-    <td>${d.blocker ? `<span style="color:var(--blocker);font-size:12px">⚠ ${d.blocker}</span>` : '—'}</td>
-  </tr>`).join('');
+  at.innerHTML = active.map((d, i) => {
+    const detailId = 'detail-' + i;
+    const hasBlocker = d.blocker ? `<span style="color:var(--blocker);font-size:12px">⚠ ${d.blocker}</span>` : '<span style="color:var(--text-secondary)">无</span>';
+    return `<tr class="clickable-row" onclick="toggleDetail('${detailId}')">
+      <td>${badge('badge-'+d.priority.toLowerCase(), d.priority)}</td>
+      <td><strong>${d.name}</strong></td>
+      <td>${vaultTag(d.vault)}</td>
+      <td>${d.stage}</td>
+      <td style="color:var(--text-secondary);font-size:12px">${d.next||'—'}</td>
+      <td>${d.blocker ? `<span style="color:var(--blocker);font-size:12px">⚠ ${d.blocker}</span>` : '—'}</td>
+    </tr>
+    <tr id="${detailId}" class="row-detail">
+      <td colspan="6">
+        <div class="row-detail-grid">
+          <span class="label">项目</span><span class="value">${d.name}</span>
+          <span class="label">知识库</span><span class="value">${d.vault}</span>
+          <span class="label">优先级</span><span class="value">${d.priority}</span>
+          <span class="label">当前阶段</span><span class="value">${d.stage}</span>
+          <span class="label">状态</span><span class="value"><span class="badge badge-active">推进中</span></span>
+          <span class="label">下一步</span><span class="value">${d.next || '待确认'}</span>
+          <span class="label">阻塞</span><span class="value">${hasBlocker}</span>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
 
   // Pending table
   document.getElementById('pending-table').innerHTML = pending.map(d => `<tr>
@@ -477,6 +515,12 @@ function toggleSection(header) {
   header.classList.toggle('collapsed');
   const body = header.nextElementSibling;
   body.classList.toggle('hidden');
+}
+
+
+function toggleDetail(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('show');
 }
 
 render();
