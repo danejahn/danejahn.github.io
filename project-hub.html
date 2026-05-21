@@ -281,41 +281,62 @@
   <span class="legend-item"><span class="vault-tag vault-reliable">R</span> Reliable</span>
 </div>
 
-<!-- Active Projects -->
+<!-- Danejahn Section -->
 <div class="section">
   <div class="section-header" onclick="toggleSection(this)">
-    <span>🔴 推进中项目</span>
-    <span class="count" id="active-label">0 个</span>
+    <span>🧑‍💻 Danejahn · 个人项目</span>
+    <span class="count" id="danejahn-count"></span>
     <span class="arrow">▼</span>
   </div>
   <div class="section-body">
     <table>
-      <thead>
-        <tr>
-          <th>优先级</th>
-          <th>项目</th>
-          <th>Vault</th>
-          <th>阶段</th>
-          <th>下一步</th>
-          <th>阻塞</th>
-        </tr>
-      </thead>
-      <tbody id="active-table"></tbody>
+      <thead><tr><th>优先级</th><th>项目</th><th>阶段</th><th>下一步</th><th>阻塞</th></tr></thead>
+      <tbody id="danejahn-table"></tbody>
     </table>
   </div>
 </div>
 
-<!-- Pending Projects -->
+<!-- FamilyHealth Section -->
 <div class="section">
   <div class="section-header" onclick="toggleSection(this)">
-    <span>🟡 待启动项目</span>
-    <span class="count" id="pending-label">0 个</span>
+    <span>🏥 FamilyHealth · 全家健康</span>
+    <span class="count" id="familyhealth-count"></span>
     <span class="arrow">▼</span>
   </div>
   <div class="section-body">
     <table>
-      <thead><tr><th>项目</th><th>Vault</th><th>优先级</th><th>说明</th></tr></thead>
-      <tbody id="pending-table"></tbody>
+      <thead><tr><th>优先级</th><th>项目</th><th>阶段</th><th>下一步</th><th>阻塞</th></tr></thead>
+      <tbody id="familyhealth-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Sunshine Section -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span>☀️ Sunshine · 阳光少年</span>
+    <span class="count" id="sunshine-count"></span>
+    <span class="arrow">▼</span>
+  </div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>优先级</th><th>项目</th><th>阶段</th><th>下一步</th><th>阻塞</th></tr></thead>
+      <tbody id="sunshine-table"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Reliable Section -->
+<div class="section">
+  <div class="section-header" onclick="toggleSection(this)">
+    <span>🔬 Reliable · 睿莱</span>
+    <span class="count" id="reliable-count"></span>
+    <span class="arrow">▼</span>
+  </div>
+  <div class="section-body">
+    <table>
+      <thead><tr><th>优先级</th><th>项目</th><th>阶段</th><th>下一步</th><th>阻塞</th></tr></thead>
+      <tbody id="reliable-table"></tbody>
     </table>
   </div>
 </div>
@@ -333,57 +354,12 @@
 <!-- Next Actions -->
 <div class="section">
   <div class="section-header" onclick="toggleSection(this)">
-    <span>📋 下一步行动</span>
-    <span class="count" id="next-label"></span>
+    <span>📋 本周行动清单</span>
+    <span class="count" id="list-label"></span>
     <span class="arrow">▼</span>
   </div>
   <div class="section-body padded" id="next-list"></div>
 </div>
-
-<!-- Paused Projects -->
-<div class="section">
-  <div class="section-header" onclick="toggleSection(this)">
-    <span>⏸️ 已暂停 / 已归档</span>
-    <span class="count" id="paused-label">0 个</span>
-    <span class="arrow">▼</span>
-  </div>
-  <div class="section-body hidden">
-    <table>
-      <thead><tr><th>项目</th><th>Vault</th><th>状态</th></tr></thead>
-      <tbody id="paused-table"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- Done Projects -->
-<div class="section">
-  <div class="section-header" onclick="toggleSection(this)">
-    <span>✅ 已完成项目</span>
-    <span class="count" id="done-label">0 个</span>
-    <span class="arrow">▼</span>
-  </div>
-  <div class="section-body hidden">
-    <table>
-      <thead><tr><th>项目</th><th>Vault</th><th>说明</th></tr></thead>
-      <tbody id="done-table"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- By Vault -->
-<div class="section">
-  <div class="section-header" onclick="toggleSection(this)">
-    <span>🗂️ 按 Vault 索引</span>
-    <span class="count">4 个知识库</span>
-    <span class="arrow">▼</span>
-  </div>
-  <div class="section-body hidden" id="vault-index">
-    <div style="padding:16px 18px;font-size:13px;color:var(--text-secondary);">
-      完整索引（加载中...）
-    </div>
-  </div>
-</div>
-
 <script>
 const data = [
   {name:"明眸皓齿数据系统",vault:"FamilyHealth",stage:"立项中",priority:"P0",status:"推进中",next:"对接陕西省卫健委数据方案",blocker:""},
@@ -442,7 +418,7 @@ function badge(cls, text) {
 
 function render() {
   const active = data.filter(d => d.status === "推进中");
-  const pending = data.filter(d => d.status === "待启动" || d.stage === "想法讨论");
+  const pending = data.filter(d => d.status === "待启动" || d.stage === "想法讨论" || d.status === "需求确认阶段");
   const paused = data.filter(d => d.status === "已暂停" || d.status === "已归档");
   const done = data.filter(d => d.status === "已完成");
   const blocked = data.filter(d => d.blocker);
@@ -452,11 +428,82 @@ function render() {
   document.getElementById('count-paused').textContent = paused.length;
   document.getElementById('count-done').textContent = done.length;
   document.getElementById('count-blocked').textContent = blocked.length;
-  document.getElementById('active-label').textContent = active.length + ' 个';
-  document.getElementById('pending-label').textContent = pending.length + ' 个';
-  document.getElementById('paused-label').textContent = paused.length + ' 个';
-  document.getElementById('done-label').textContent = done.length + ' 个';
+
+  // Render vault sections (all projects in each vault: active + pending + paused)
+  const vaults = [
+    {id:'danejahn', name:'Danejahn', icon:'🧑‍💻', filter: d => d.vault === 'Danejahn', statusOrder: {'推进中':0,'待启动':1,'已暂停':2,'已归档':3}},
+    {id:'familyhealth', name:'FamilyHealth', icon:'🏥', filter: d => d.vault === 'FamilyHealth', statusOrder: {'推进中':0,'待启动':1,'已暂停':2,'已归档':3}},
+    {id:'sunshine', name:'Sunshine', icon:'☀️', filter: d => d.vault === 'Sunshine', statusOrder: {'推进中':0,'待启动':1,'已暂停':2,'已归档':3}},
+    {id:'reliable', name:'Reliable', icon:'🔬', filter: d => d.vault === 'Reliable', statusOrder: {'推进中':0,'待启动':1,'已暂停':2,'已归档':3}}
+  ];
+
+  for (const v of vaults) {
+    let vaultData = data.filter(v.filter);
+    // Sort: active first, then pending, then paused
+    const so = v.statusOrder;
+    vaultData.sort((a,b) => {
+      const sa = so[a.status] ?? 99, sb = so[b.status] ?? 99;
+      if (sa !== sb) return sa - sb;
+      const pa = {'P0':0,'P1':1,'P2':2,'P3':3}[a.priority] ?? 99;
+      const pb = {'P0':0,'P1':1,'P2':2,'P3':3}[b.priority] ?? 99;
+      if (pa !== pb) return pa - pb;
+      return a.name.localeCompare(b.name);
+    });
+
+    document.getElementById(v.id + '-count').textContent = vaultData.length + ' 个';
+
+    const table = document.getElementById(v.id + '-table');
+    table.innerHTML = vaultData.map((d, i) => {
+      const detailId = v.id + '-detail-' + i;
+      const hasBlocker = d.blocker ? \`<span style="color:var(--blocker);font-size:12px">⚠ \${d.blocker}</span>\` : '<span style="color:var(--text-secondary)">无</span>';
+      const statusBadge = d.status === '推进中' ? '<span class="badge badge-active">推进中</span>'
+        : d.status === '待启动' ? '<span class="badge badge-pending">待启动</span>'
+        : d.status === '已暂停' ? '<span class="badge badge-paused">已暂停</span>'
+        : '<span class="badge badge-paused">已归档</span>';
+      return \`<tr class="clickable-row" onclick="toggleDetail('\${detailId}')">
+        <td>\${badge('badge-'+d.priority.toLowerCase(), d.priority)} \${statusBadge}</td>
+        <td><strong>\${d.name}</strong></td>
+        <td>\${d.stage}</td>
+        <td style="color:var(--text-secondary);font-size:12px">\${d.next||'—'}</td>
+        <td>\${d.blocker ? \`<span style="color:var(--blocker);font-size:12px">⚠ \${d.blocker}</span>\` : '—'}</td>
+      </tr>
+      <tr id="\${detailId}" class="row-detail">
+        <td colspan="5">
+          <div class="row-detail-grid">
+            <span class="label">项目</span><span class="value">\${d.name}</span>
+            <span class="label">知识库</span><span class="value">\${d.vault}</span>
+            <span class="label">优先级</span><span class="value">\${d.priority}</span>
+            <span class="label">当前阶段</span><span class="value">\${d.stage}</span>
+            <span class="label">状态</span><span class="value">\${statusBadge}</span>
+            <span class="label">下一步</span><span class="value">\${d.next || '待确认'}</span>
+            <span class="label">阻塞</span><span class="value">\${hasBlocker}</span>
+          </div>
+        </td>
+      </tr>\`;
+    }).join('');
+  }
+
+  // Blockers
   document.getElementById('blocker-label').textContent = blocked.length + ' 个';
+  document.getElementById('blocker-list').innerHTML = blocked.map(d => \`
+    <div class="blocker-item">
+      <span class="blocker-icon">⚠️</span>
+      <span class="blocker-project">\${d.name}</span>
+      <span class="blocker-detail">\${d.blocker}</span>
+    </div>
+  \`).join('');
+
+  // Next actions
+  const nextItems = active.filter(d => d.next && d.next !== '—').slice(0, 8);
+  document.getElementById('list-label').textContent = nextItems.length + ' 项';
+  document.getElementById('next-list').innerHTML = nextItems.map((d,i) => \`
+    <div class="next-item">
+      <span class="next-num">\${i+1}</span>
+      <span><strong>\${badge('badge-'+d.priority.toLowerCase(), d.priority)} \${d.name}</strong></span>
+      <span style="color:var(--text-secondary);font-size:13px">→ \${d.next}</span>
+    </div>
+  \`).join('');
+}
 
   // Active table
   const at = document.getElementById('active-table');
